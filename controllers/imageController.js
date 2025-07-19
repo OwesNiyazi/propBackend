@@ -1,19 +1,29 @@
 const Image = require('../models/Image');
 const { cloudinary } = require('../config/cloudinary');
 
-exports.uploadImage = async (req, res) => {
+const uploadImage = async (req, res) => {
   try {
-    const image = await Image.create({
-      title: req.body.title,
-      imageUrl: req.file.path,
-      publicId: req.file.filename,
-      user: req.user.id
+    const result = await cloudinary.uploader.upload(req.file.path);
+
+    const { title, description, type, price, location } = req.body;
+
+    const image = new Image({
+      title,
+      imageUrl: result.secure_url,
+      description,
+      type,
+      price,
+      location,
+      createdBy: req.user.id,
     });
+
+    await image.save();
     res.status(201).json(image);
   } catch (err) {
-    res.status(500).json({ message: 'Upload failed', error: err });
+    res.status(500).json({ message: 'Failed to upload image' });
   }
 };
+
 
 exports.getImages = async (req, res) => {
   try {
@@ -37,20 +47,27 @@ exports.deleteImage = async (req, res) => {
 };
 
 
-exports.updateImage = async (req, res) => {
+const updateImage = async (req, res) => {
   try {
     const image = await Image.findById(req.params.id);
     if (!image) return res.status(404).json({ message: 'Image not found' });
 
-    if (image.user.toString() !== req.user.id) {
+    // Only allow update if it's the user's image
+    if (image.createdBy.toString() !== req.user.id)
       return res.status(403).json({ message: 'Unauthorized' });
-    }
 
-    image.title = req.body.title || image.title;
+    const { title, description, type, price, location } = req.body;
+
+    image.title = title || image.title;
+    image.description = description || image.description;
+    image.type = type || image.type;
+    image.price = price || image.price;
+    image.location = location || image.location;
+
     await image.save();
-
-    res.status(200).json(image);
+    res.json(image);
   } catch (err) {
-    res.status(500).json({ message: 'Failed to update image', error: err });
+    res.status(500).json({ message: 'Failed to update image' });
   }
 };
+
