@@ -68,6 +68,8 @@ const updateImage = async (req, res) => {
     res.json(image);
   } catch (err) {
     res.status(500).json({ message: 'Failed to update image' });
+    console.log("this is error"+err)
   }
 };
+// addedc
 
