@@ -27,7 +27,9 @@ const uploadImage = async (req, res) => {
 
 exports.getImages = async (req, res) => {
   try {
-    const images = await Image.find({ user: req.user.id }).sort({ createdAt: -1 });
+    // const images = await Image.find({ user: req.user.id }).sort({ createdAt: -1 });
+    const images = await Image.find({ createdBy: req.user.id }).sort({ createdAt: -1 });
+
     res.status(200).json(images);
   } catch (err) {
     res.status(500).json({ message: 'Failed to fetch images', error: err });
