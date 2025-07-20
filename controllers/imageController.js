@@ -71,3 +71,6 @@ const updateImage = async (req, res) => {
   }
 };
 
+exports.uploadImage = uploadImage;
+exports.updateImage = updateImage;
+
