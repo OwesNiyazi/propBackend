@@ -54,11 +54,16 @@ const updateImage = async (req, res) => {
     const image = await Image.findById(req.params.id);
     if (!image) return res.status(404).json({ message: 'Image not found' });
 
-    // Only allow update if it's the user's image
     if (image.createdBy.toString() !== req.user.id)
       return res.status(403).json({ message: 'Unauthorized' });
 
     const { title, description, type, price, location } = req.body;
+
+    // ✅ If new image is uploaded
+    if (req.file && req.file.path) {
+      const result = await cloudinary.uploader.upload(req.file.path);
+      image.imageUrl = result.secure_url;
+    }
 
     image.title = title || image.title;
     image.description = description || image.description;
@@ -69,9 +74,11 @@ const updateImage = async (req, res) => {
     await image.save();
     res.json(image);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: 'Failed to update image' });
   }
 };
+
 
 exports.uploadImage = uploadImage;
 exports.updateImage = updateImage;
