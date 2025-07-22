@@ -143,4 +143,3 @@ exports.adminCreateImage = async (req, res) => {
 
 exports.uploadImage = uploadImage;
 exports.updateImage = updateImage;
-
