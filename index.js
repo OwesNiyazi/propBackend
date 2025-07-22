@@ -2,6 +2,20 @@ const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/db');
+// admin
+const User = require('./models/User');
+const bcrypt = require('bcryptjs');
+
+const createAdminIfNotExist = async () => {
+  const admin = await User.findOne({ email: 'admin@mail.com' });
+  if (!admin) {
+    const hashedPassword = await bcrypt.hash('admin@123', 10);
+    await User.create({ username: 'admin', email: 'admin@mail.com', password: hashedPassword, isAdmin: true });
+    console.log('✅ Admin user created');
+  }
+};
+createAdminIfNotExist();
+///
 
 dotenv.config();
 connectDB();

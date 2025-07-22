@@ -1,12 +1,14 @@
 const mongoose = require('mongoose');
 
 const imageSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  imageUrl: { type: String, required: true },
-  description: { type: String },
-  type: { type: String },
-  price: { type: Number },
-  location: { type: String },
+  title: String,
+  description: String,
+  type: String,
+  subtype: { type: String },
+  price: Number,
+  location: String,
+  imageUrls: [String], // <-- Change from imageUrl to imageUrls (array)
+  propertyType: { type: String, enum: ['Rent', 'Sale'], default: 'Sale' },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 
